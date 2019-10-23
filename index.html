@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>auth</title>
+
+    <style>
+        body {
+            border: 0px;
+            margin: 0px;
+        }
+        .userpass {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 0px;
+            margin: 0px;
+            background-color: rgb(140, 207, 207);
+            font-size: 30px;
+            font-size: 13.5vw;
+            align-content: center;
+            overflow: hidden;
+        }
+        .input {
+            user-select: none;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            color: rgb(58, 145, 145);
+        }
+        .placeholder {
+            color: rgb(218, 236, 227);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        function greet(user, pass) {
+            var p = document.createElement('p')
+            p.innerText = `hello ${user}`
+            document.body.style.alignContent = "center"
+            p.classList.add("input")
+            document.body.appendChild(p)
+        }
+    </script>
+    <div id="userpass" class="userpass">
+        <p id="input" class="input placeholder">email</p>
+
+        <script>
+            const input = document.getElementById("input")
+            var base = "email";
+            var email, password;
+            document.body.addEventListener("keypress", e => {
+                if(e.key.length > 1) return
+                if(input.classList.contains("placeholder")) {
+                    input.classList.remove("placeholder");
+                    base = input.innerText;
+                    input.innerText = ""
+                }
+                input.innerText += base === "password" ? "*" : e.key
+                input.pdata = base === "password" ? (input.pdata || "") + e.key : ""
+                adjustFontSize();
+            })
+            document.body.addEventListener("keydown", e => {
+                if(e.key === "Backspace") {
+                    if(input.classList.contains("placeholder")) {
+                        base = input.innerText;
+                    } else {
+                        input.innerText = input.innerText.slice(0, input.innerText.length - 1)
+                        if(input.innerText.length === 0) {
+                            input.classList.add("placeholder");
+                            input.innerText = base;
+                        }
+                    }
+                } else if(!input.classList.contains("placeholder") && e.key === "Enter" && base === "email") {
+                    email = input.innerText;
+                    // sanitize
+                    base = "password";
+                    input.innerText = base;
+                    input.classList.add("placeholder")
+                } else if(!input.classList.contains("placeholder") && e.key === "Enter" && base === "password") {
+                    password = input.pdata;
+                    input.pdata = undefined;
+                    // sanitize
+                    base = ""
+                    console.log(email, password)
+                    greet(email, password)
+                    document.getElementById("userpass").remove()
+                }
+                adjustFontSize();
+            })
+
+            function adjustFontSize() {
+                var len = input.innerText.length;
+                var normal = 13.5
+                var norm = 10
+                var err = len - norm;
+                if(len > norm) {
+                    var fs = (normal - err * (0.75 - (err * 0.015)));
+                    if(len > 30) {
+                        input.style.fontSize = "4.5vw" // size at 30 len
+                    } else {
+                        input.style.fontSize = fs + "vw"
+                    }
+                } else {
+                    input.style.fontSize = "13.5vw"
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
